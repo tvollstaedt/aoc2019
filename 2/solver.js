@@ -6,16 +6,16 @@ intCodeEngine = programString => {
     let finish = false;
 
     while (!finish) {
-        const leftOperand = parseInt(program[pointer + 1]);
-        const rightOperand = parseInt(program[pointer + 2]);
-        const target = parseInt(program[pointer + 3]);
+        const leftOperandIndex = parseInt(program[pointer + 1]);
+        const rightOperandIndex = parseInt(program[pointer + 2]);
+        const targetIndex = parseInt(program[pointer + 3]);
 
-        switch (program[pointer]) {
+        switch (parseInt(program[pointer])) {
             case ADD:
-                program[target] = program[leftOperand] + program[rightOperand];
+                program[targetIndex] = parseInt(program[leftOperandIndex]) + parseInt(program[rightOperandIndex]);
                 break;
             case MULTIPLY:
-                program[target] = program[leftOperand] * program[rightOperand];
+                program[targetIndex] = parseInt(program[leftOperandIndex]) * parseInt(program[rightOperandIndex]);
                 break;
             case EXIT:
                 finish = true;
@@ -34,7 +34,10 @@ const MULTIPLY = 2;
 const EXIT = 99;
 
 fs.readFile('input', 'utf8').then(content => {
-    console.log(intCodeEngine(content));
+    const program = content.split(',');
+    program[1] = 12;
+    program[2] = 2;
+    console.log(intCodeEngine(program.join(',')));
 });
 
 
