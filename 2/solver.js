@@ -1,10 +1,12 @@
+'use strict';
+
 const fs = require('fs').promises;
 const ADD = 1;
 const MULTIPLY = 2;
 const EXIT = 99;
 
 
-intCodeEngine = program => {
+const intCodeEngine = program => {
     let pointer = 0;
     let finish = false;
 
@@ -31,7 +33,7 @@ intCodeEngine = program => {
     return program;
 };
 
-findInputs = (program, wantedValue) => {
+const findInputs = (program, wantedValue) => {
     for(let noun = 0; noun <= 99; noun++) {
         for(let verb = 0; verb <= 99; verb++) {
             const alteredProgram = [program[0], noun, verb, ...program.slice(3)];

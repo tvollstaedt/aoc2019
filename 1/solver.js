@@ -1,10 +1,12 @@
+'use strict';
+
 const fs = require('fs').promises;
 
-calculateMassFuel = mass => {
+const calculateMassFuel = mass => {
     return Math.floor(mass / 3) - 2;
 };
 
-calculateTotalFuel = mass => {
+const calculateTotalFuel = mass => {
     let massFeul = calculateMassFuel(mass);
     return massFeul > 0 ? massFeul += calculateTotalFuel(massFeul) : 0;
 };

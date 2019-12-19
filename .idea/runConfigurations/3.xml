@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="3" type="NodeJSConfigurationType" path-to-js-file="solver.js" working-dir="$PROJECT_DIR$/3">
+    <method v="2" />
+  </configuration>
+</component>
