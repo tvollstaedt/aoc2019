@@ -1,7 +1,10 @@
 const fs = require('fs').promises;
+const ADD = 1;
+const MULTIPLY = 2;
+const EXIT = 99;
 
-intCodeEngine = programString => {
-    const program = programString.split(',');
+
+intCodeEngine = program => {
     let pointer = 0;
     let finish = false;
 
@@ -25,22 +28,31 @@ intCodeEngine = programString => {
         pointer += 4;
     }
 
-    return program.join(',');
+    return program;
 };
 
-
-const ADD = 1;
-const MULTIPLY = 2;
-const EXIT = 99;
+findInputs = (program, wantedValue) => {
+    for(let noun = 0; noun <= 99; noun++) {
+        for(let verb = 0; verb <= 99; verb++) {
+            const alteredProgram = [program[0], noun, verb, ...program.slice(3)];
+            const outputValue = intCodeEngine(alteredProgram)[0];
+            if(outputValue === wantedValue) {
+                return 100 * noun + verb;
+            }
+        }
+    }
+}
 
 fs.readFile('input', 'utf8').then(content => {
     const program = content.split(',');
-    program[1] = 12;
-    program[2] = 2;
-    console.log(intCodeEngine(program.join(',')));
+    console.log('Intcode output: ', intCodeEngine([program[0], 12, 2, ...program.slice(3)])[0]);
+
+    const wantedValue = 19690720;
+    console.log(`100 * noun + verb for ${wantedValue}:`, findInputs(program, wantedValue) || 'Not found :-(');
 });
 
 
 module.exports = {
-    intCodeEngine
+    intCodeEngine,
+    findInputs
 };
