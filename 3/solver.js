@@ -79,7 +79,7 @@ const getShortestDistanceFromWirePath = wirePath => {
     const wireMap = createWireMap(wirePath);
     const intersections = findWireIntersections(wireMap);
     const distances = intersections
-        .filter(point => point.x !== 0 && point.y !== 0)
+        .filter(point => !(point.x === 0 && point.y === 0))
         .map(intersection =>
             getManhattenDistance(rootPoint, [intersection.x, intersection.y])
         )
