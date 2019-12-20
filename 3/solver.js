@@ -1,28 +1,32 @@
 'use strict';
-
 const {
     checkIntersection,
 } = require('line-intersect');
 
 const fs = require('fs').promises;
 
-const rootPoint = [0, 0];
-
-const getManhattenDistance = (rootPoint, intersection) => {
-    return Math.abs(rootPoint[0] - intersection[0]) + Math.abs(rootPoint[1] - intersection[1]);
-};
-
 const findWireIntersections = wireMaps => {
     const intersections = [];
+    const intersectionSteps = [0, 0];
 
     wireMaps[0].forEach(wireOneLine => {
+        intersectionSteps[0] += Math.abs(wireOneLine[1][1] - wireOneLine[0][1]) + Math.abs(wireOneLine[1][0] - wireOneLine[0][0]);
+        intersectionSteps[1] = 0;
         wireMaps[1].forEach(wireTwoLine => {
+            intersectionSteps[1] += Math.abs(wireTwoLine[1][1] - wireTwoLine[0][1]) + Math.abs(wireTwoLine[1][0] - wireTwoLine[0][0]);
+
             const intersection = checkIntersection(
                 ...wireOneLine[0], ...wireOneLine[1], ...wireTwoLine[0], ...wireTwoLine[1]
             );
 
             if (intersection.type === 'intersecting') {
-                intersections.push(intersection.point);
+                intersections.push({
+                    steps: [
+                        intersectionSteps[0] - Math.abs(wireOneLine[0][0] === wireOneLine[1][0] ? wireOneLine[1][1] - intersection.point.y : wireOneLine[1][0] - intersection.point.x),
+                        intersectionSteps[1] - Math.abs(wireTwoLine[0][0] === wireTwoLine[1][0] ? wireTwoLine[1][1] - intersection.point.y : wireTwoLine[1][0] - intersection.point.x)
+                    ],
+                    point: intersection.point
+                });
             }
         })
     });
@@ -34,7 +38,7 @@ const createWireMap = (wirePaths) => {
     const wireMap = [];
 
     wirePaths.filter(pathString => !!pathString).forEach((wirePath, wireIndex) => {
-        const currentPosition = [...rootPoint];
+        const currentPosition = [0, 0];
         wireMap[wireIndex] = [];
 
         wirePath.split(',').forEach(step => {
@@ -75,27 +79,37 @@ const createWireMap = (wirePaths) => {
     return wireMap;
 };
 
-const getShortestDistanceFromWirePath = wirePath => {
-    const wireMap = createWireMap(wirePath);
-    const intersections = findWireIntersections(wireMap);
+const getShortestDistanceFromIntersections = intersections => {
     const distances = intersections
-        .filter(point => !(point.x === 0 && point.y === 0))
+        .filter(intersection => !(intersection.point.x === 0 && intersection.point.y === 0))
         .map(intersection =>
-            getManhattenDistance(rootPoint, [intersection.x, intersection.y])
+            Math.abs(intersection.point.x) + Math.abs(intersection.point.y)
         )
         .sort((a, b) => a - b);
 
     return distances[0] || -1;
 };
 
+const getFewestStepCount = intersections => {
+    return intersections
+        .filter(int => int.point.x !== 0 && int.point.y !== 0)
+        .map(int => int.steps.reduce((a, c) => a + c, 0))
+        .sort((a, b) => a - b)[0] || -1;
+};
+
 fs.readFile('input', 'utf8').then(content => {
+    const wireMap = createWireMap(content.split('\n'));
+    const intersections = findWireIntersections(wireMap);
+
     console.log('Shortest wire intersection distance: ',
-        getShortestDistanceFromWirePath(content.split('\n')));
+        getShortestDistanceFromIntersections(intersections));
+
+    console.log('Fewest step count to reach an intersection: ', getFewestStepCount(intersections));
 });
 
 module.exports = {
     createWireMap,
     findWireIntersections,
-    getManhattenDistance,
-    getShortestDistanceFromWirePath
+    getShortestDistanceFromIntersections,
+    getFewestStepCount
 };
