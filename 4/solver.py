@@ -32,8 +32,7 @@ def main():
     print("Part 1:", len(list(filter(check_criteria(False), test_range))))
 
     # Part 2
-    foo = list(filter(check_criteria(True), test_range))
-    print("Part 2:", len(foo))
+    print("Part 2:", len(list(filter(check_criteria(True), test_range))))
 
 
 if __name__ == "__main__":
